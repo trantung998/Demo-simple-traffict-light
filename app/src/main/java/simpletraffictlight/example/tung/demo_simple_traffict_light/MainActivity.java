@@ -1,6 +1,7 @@
 package simpletraffictlight.example.tung.demo_simple_traffict_light;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.support.v7.widget.ShareActionProvider;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -32,6 +34,8 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
     ArrayList _arrayNameList = new ArrayList();
 
     ShareActionProvider shareActionProvider;
+    SharedPreferences sharedPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,8 +59,14 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
         mainListView  = (ListView)findViewById(R.id.main_listview);
         mainListView.setAdapter(_arrayAdapter);
         mainListView.setOnItemClickListener(this);
+        DisplayGreeting();
     }
+    public void DisplayGreeting(){
+        sharedPreferences = getSharedPreferences("pref",MODE_PRIVATE);
+        String name = sharedPreferences.getString("name", "Tung");
 
+        Toast.makeText(this,name,Toast.LENGTH_LONG).show();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -93,6 +103,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
         _arrayNameList.add(mainEditText.getText().toString());
         _arrayAdapter.notifyDataSetChanged();
         mainEditText.setText("");
+
     }
 
     @Override
