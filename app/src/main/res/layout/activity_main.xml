@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    tools:context="simpletraffictlight.example.tung.demo_simple_traffict_light.MainActivity">
 
     <TextView
         android:id="@+id/main_textview"
@@ -28,6 +30,7 @@
             android:text="@string/button"
             android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
+            android:onClick="onClick"
             />
 
         <ImageView
