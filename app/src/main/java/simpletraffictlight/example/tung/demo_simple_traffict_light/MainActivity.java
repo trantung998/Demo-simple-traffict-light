@@ -23,12 +23,24 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+
+import org.apache.http.Header;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import static android.view.View.OnClickListener;
 
 
 public class MainActivity extends ActionBarActivity implements OnClickListener, OnItemClickListener {
+
+    private static final String QUERY_URL = "http://openlibrary.org/search.json?q=";
+
     TextView mainTextView;
     Button mainButton;
     EditText mainEditText;
@@ -47,7 +59,6 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
 
         //init textView
         mainTextView = (TextView)findViewById(R.id.main_textview);
-        mainTextView.setText("Hello word from Main Activity");
         //button
         mainButton = (Button)findViewById(R.id.main_button);
         //mainButton.setOnClickListener(this);
@@ -143,13 +154,11 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
 
     @Override
     public void onClick(View pView) {
-        mainTextView.setText(mainEditText.getText().toString() + " added");
-        if(mainEditText.getText().toString().equals("")) return;
-
-        _arrayNameList.add(mainEditText.getText().toString());
-        _arrayAdapter.notifyDataSetChanged();
-        mainEditText.setText("");
-
+        if(mainEditText.getText().toString().equals("")) {
+            Toast.makeText(this, "Enter",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        requestBook(mainEditText.getText().toString());
     }
 
     @Override
@@ -166,6 +175,47 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
     public void OnTextviewClick(View v) {
         Log.d("", "test");
         Toast.makeText(getApplicationContext(), "Hello", Toast.LENGTH_LONG).show();
+    }
+
+    public void requestBook(String strSearch)
+    {
+        String urlString = "";
+
+        try {
+            urlString = URLEncoder.encode(strSearch,"UTF-8");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+            Toast.makeText(this,"Error:" + e.getMessage(),Toast.LENGTH_SHORT).show();
+        }
+
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        client.get(QUERY_URL + urlString,
+                new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        // Display a "Toast" message
+                        // to announce your success
+                        Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_LONG).show();
+
+                        // 8. For now, just log results
+                        Log.d("omg android", response.toString());
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        // Display a "Toast" message
+                        // to announce the failure
+                        Toast.makeText(getApplicationContext(), "Error: " + statusCode + " " + throwable.getMessage(), Toast.LENGTH_LONG).show();
+
+                        // Log error message
+                        // to help solve any problems
+                        Log.e("omg android", statusCode + " " + throwable.getMessage());
+                    }
+                });
     }
 
 }

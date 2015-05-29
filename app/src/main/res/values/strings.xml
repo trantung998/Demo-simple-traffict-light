@@ -1,9 +1,7 @@
 <resources>
-    <string name="app_name">Demo-simple-traffict-light</string>
-
-    <string name="text_view">Hello android</string>
-    <string name="button">Button</string>
+    <string name="app_name">Book Laucher</string>
+    <string name="text_view">Search for book!</string>
+    <string name="button">Search</string>
     <string name="action_share">Share</string>
-
-    <string name="text_editor_hint">Enter text here</string>
+    <string name="text_editor_hint">Title and/or Anthor</string>
 </resources>
