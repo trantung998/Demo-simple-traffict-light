@@ -2,6 +2,7 @@ package simpletraffictlight.example.tung.demo_simple_traffict_light;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -37,7 +38,7 @@ import java.util.ArrayList;
 import static android.view.View.OnClickListener;
 
 
-public class MainActivity extends ActionBarActivity implements OnClickListener, OnItemClickListener {
+public class MainActivity extends ActionBarActivity implements OnClickListener {
 
     private static final String QUERY_URL = "http://openlibrary.org/search.json?q=";
 
@@ -46,11 +47,13 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
     EditText mainEditText;
 
     ListView mainListView;
-    ArrayAdapter _arrayAdapter;
     ArrayList _arrayNameList = new ArrayList();
+    JSONAdapter jsonAdapter;
 
     ShareActionProvider shareActionProvider;
     SharedPreferences sharedPreferences;
+
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
         //mainButton.setOnClickListener(this);
         //edittext
         mainEditText = (EditText)findViewById(R.id.main_text_editor);
+
         mainEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -72,16 +76,17 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
                 }
             }
         });
-        mainEditText.clearFocus();
-        //list view
-        _arrayAdapter = new ArrayAdapter(
-                this,
-                android.R.layout.simple_list_item_1,
-                _arrayNameList);
 
+        //jsonadapter
+        jsonAdapter = new JSONAdapter(this,getLayoutInflater());
+        //list view
         mainListView  = (ListView)findViewById(R.id.main_listview);
-        mainListView.setAdapter(_arrayAdapter);
-        mainListView.setOnItemClickListener(this);
+        mainListView.setAdapter(jsonAdapter);
+        //setup progess dialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Searching books!");
+        progressDialog.setCancelable(false);
+
         DisplayGreeting();
     }
 
@@ -159,13 +164,14 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
             return;
         }
         requestBook(mainEditText.getText().toString());
+        progressDialog.show();
     }
 
-    @Override
-    public void onItemClick(AdapterView<?   > parent, View view, int position, long id) {
-
-        Log.d("", position + ": " + _arrayNameList.get(position));
-    }
+//    @Override
+//    public void onItemClick(AdapterView<?   > parent, View view, int position, long id) {
+//
+//        Log.d("", position + ": " + _arrayNameList.get(position));
+//    }
 
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -202,18 +208,22 @@ public class MainActivity extends ActionBarActivity implements OnClickListener, 
                         Toast.makeText(getApplicationContext(), "Success!", Toast.LENGTH_LONG).show();
 
                         // 8. For now, just log results
-                        Log.d("omg android", response.toString());
+//                        Log.d("omg android", response.toString());
+                        progressDialog.dismiss();
+                        jsonAdapter.updateData(response.optJSONArray("docs"));
+
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                         // Display a "Toast" message
                         // to announce the failure
+                        progressDialog.dismiss();
                         Toast.makeText(getApplicationContext(), "Error: " + statusCode + " " + throwable.getMessage(), Toast.LENGTH_LONG).show();
-
                         // Log error message
                         // to help solve any problems
                         Log.e("omg android", statusCode + " " + throwable.getMessage());
+
                     }
                 });
     }
