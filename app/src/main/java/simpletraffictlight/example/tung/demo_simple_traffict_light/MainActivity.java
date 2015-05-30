@@ -11,15 +11,18 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,15 +41,17 @@ import java.util.ArrayList;
 import static android.view.View.OnClickListener;
 
 
-public class MainActivity extends ActionBarActivity implements OnClickListener {
+public class MainActivity extends ActionBarActivity implements OnClickListener,OnItemClickListener {
 
     private static final String QUERY_URL = "http://openlibrary.org/search.json?q=";
 
     TextView mainTextView;
-    Button mainButton;
+//    Button mainButton;
     EditText mainEditText;
 
     ListView mainListView;
+    GridView mainGridView;
+
     ArrayList _arrayNameList = new ArrayList();
     JSONAdapter jsonAdapter;
 
@@ -63,7 +68,7 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
         //init textView
         mainTextView = (TextView)findViewById(R.id.main_textview);
         //button
-        mainButton = (Button)findViewById(R.id.main_button);
+//        mainButton = (Button)findViewById(R.id.main_button);
         //mainButton.setOnClickListener(this);
         //edittext
         mainEditText = (EditText)findViewById(R.id.main_text_editor);
@@ -77,11 +82,42 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
             }
         });
 
+        mainEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    Search();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        mainEditText.setOnKeyListener(new View.OnKeyListener() {
+
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) {
+                    Log.e("test", "--------- on enter");
+                    Search();
+                    hideKeyboard(v);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         //jsonadapter
         jsonAdapter = new JSONAdapter(this,getLayoutInflater());
         //list view
-        mainListView  = (ListView)findViewById(R.id.main_listview);
-        mainListView.setAdapter(jsonAdapter);
+//        mainListView  = (ListView)findViewById(R.id.main_listview);
+//        mainListView.setOnItemClickListener(this);
+//        mainListView.setAdapter(jsonAdapter);
+        //grid view
+        mainGridView = (GridView)findViewById(R.id.main_gridview);
+        mainGridView.setOnItemClickListener(this);
+        mainGridView.setAdapter(jsonAdapter);
         //setup progess dialog
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Searching books!");
@@ -159,19 +195,31 @@ public class MainActivity extends ActionBarActivity implements OnClickListener {
 
     @Override
     public void onClick(View pView) {
+        Search();
+    }
+
+    public void Search() {
+
         if(mainEditText.getText().toString().equals("")) {
             Toast.makeText(this, "Enter",Toast.LENGTH_SHORT).show();
             return;
         }
         requestBook(mainEditText.getText().toString());
+
+        mainEditText.setText("");
+
         progressDialog.show();
     }
 
-//    @Override
-//    public void onItemClick(AdapterView<?   > parent, View view, int position, long id) {
-//
-//        Log.d("", position + ": " + _arrayNameList.get(position));
-//    }
+    @Override
+    public void onItemClick(AdapterView<?   > parent, View view, int position, long id) {
+        JSONObject json = jsonAdapter.getItem(position);
+
+        String coverId = json.optString("cover_i", "");
+        Intent in = new Intent(this, DetailActivity.class);
+        in.putExtra("coverId", coverId);
+        startActivity(in);
+    }
 
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);

@@ -61,13 +61,12 @@ public class JSONAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHoler holer;
         if(convertView == null) {
-            convertView = _layoutInflater.inflate(R.layout.book_item_layout,null);
+            convertView = _layoutInflater.inflate(R.layout.book_item_for_gridview, null);
 
             holer = new ViewHoler();
             holer.img_thumb  = (ImageView)convertView.findViewById(R.id.img_thumbnail);
             holer.text_title = (TextView)convertView.findViewById(R.id.text_title);
             holer.text_auth  = (TextView)convertView.findViewById(R.id.text_author);
-
             convertView.setTag(holer);
         }else {
             holer = (ViewHoler) convertView.getTag();

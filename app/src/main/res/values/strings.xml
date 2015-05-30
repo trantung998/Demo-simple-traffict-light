@@ -1,7 +1,10 @@
 <resources>
-    <string name="app_name">Book Laucher</string>
+    <string name="app_name">Vina Book</string>
     <string name="text_view">Search for book!</string>
     <string name="button">Search</string>
     <string name="action_share">Share</string>
     <string name="text_editor_hint">Title and/or Anthor</string>
+
+    <string name="book_title_default_string">Title</string>
+    <string name="book_auth_default_string">Auth</string>
 </resources>

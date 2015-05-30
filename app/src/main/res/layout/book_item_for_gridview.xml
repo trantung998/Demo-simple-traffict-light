@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="80dp"
+    android:layout_height="80dp"
+    >
+
+    <simpletraffictlight.example.tung.demo_simple_traffict_light.SquareImageView
+        android:id="@+id/img_thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:layout_gravity="center"
+        android:src="@mipmap/ic_launcher"
+        android:contentDescription="@string/book_title_default_string"
+        />
+
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:text="@string/book_title_default_string"
+        android:layout_gravity="center|top"
+        android:maxLines="1"
+        android:textColor="@android:color/white"
+        android:background="#55000000"
+        />
+
+    <TextView
+        android:id="@+id/text_author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/book_auth_default_string"
+        android:layout_gravity="center|bottom"
+        android:textColor="@android:color/white"
+        android:background="#55000000"
+        android:maxLines="1"
+        />
+
+</FrameLayout>
